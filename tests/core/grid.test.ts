@@ -33,6 +33,7 @@ describe('grid', () => {
     expect(getCell(g, -1, 0)).toBe(LAND);
     expect(getCell(g, 6, 6)).toBe(LAND);
     setCell(g, -1, 0, TRAIL);
+    expect(countCells(g, TRAIL)).toBe(0);
     expect(getCell(g, -1, 0)).toBe(LAND);
   });
 

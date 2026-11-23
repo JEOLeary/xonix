@@ -60,4 +60,19 @@ describe('collision', () => {
     const warders: Warder[] = [{ p: 0, dir: 1 }];
     expect(checkDeath(g, player, balls, warders, ring)).toBe('ball');
   });
+
+  test('trail beats warder: ball touching trail + warder on player cell → trail', () => {
+    const { g, player, ring } = setup();
+    setCell(g, 5, 4, TRAIL);
+    const balls: Ball[] = [{ x: 6.5, y: 4.5, dx: -1, dy: 1 }]; // cell (6,4) orthogonally touches (5,4)
+    const warders: Warder[] = [{ p: 0, dir: 1 }]; // ring[0] = player cell (1,1)
+    expect(checkDeath(g, player, balls, warders, ring)).toBe('trail');
+  });
+
+  test('adjacency is orthogonal-only: ball diagonal to trail → null', () => {
+    const { g, player, ring } = setup();
+    setCell(g, 5, 4, TRAIL);
+    const balls: Ball[] = [{ x: 6.5, y: 5.5, dx: 1, dy: 1 }]; // cell (6,5) is diagonal-only to (5,4)
+    expect(checkDeath(g, player, balls, [], ring)).toBeNull();
+  });
 });

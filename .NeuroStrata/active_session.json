@@ -1,0 +1,9 @@
+{
+  "golden_rules": [],
+  "namespace": "xonix",
+  "session_id": "this-session",
+  "status": "in_progress",
+  "subagent_prompt_injection": "### NeuroStrata Task & Graph Context (PASTE INTO ALL SUBAGENT PROMPTS)\n- Namespace: `xonix` | Task ID: `xonix-n5ko` | Goal: Plan Xonix web app reproduction: spec approval + implementation plan\n- Auto-Retrieved Governing Rules & Graph Nodes:\n  - (no pre-existing memories matched; run neurostrata_search_memory / neurostrata_memories_for_file as you explore)\n- Mandatory Graph-First Lookup Rule: Before editing any file, check whether its path and governing memory IDs (`mem-...`) are already listed under `### NeuroStrata Task & Graph Context` in your prompt. For any file you touch that is NOT listed in that block, call `neurostrata_memories_for_file` first (or `neurostrata_related` / `neurostrata_search_memory` with `include_related: true` / `neurostrata_sparql_query`).\n- Formal Verification Reflex: When adding or modifying a state machine, gate, sovereignty/ACL check, CRDT/merge rule, lease/claim rule, or conservation invariant, evaluate whether to extract the pure decision into `src/formal_kernel.rs`, prove its theorems in `proofs/NeuroStrata/*.lean` (zero `sorry`/`axiom`), and extend `tests/lean_parity_test.rs`.",
+  "task_id": "xonix-n5ko",
+  "updated_at": "2026-11-23T19:16:39Z"
+}

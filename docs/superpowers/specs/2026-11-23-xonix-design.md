@@ -226,27 +226,76 @@ implementation plan.
 ## 13. Addendum: Fidelity verification (2026-11-23)
 
 Sources checked: archive.org item `msdos_Xonix_1984` metadata + file list (only
-`Xonix_1984.zip`; no readme/manual — the zip's only text is `file_id.diz`: title,
-v2.2, 1984, Ilan Rav, Action), `strings` on `XONIX.EXE` (v2.2: `Enter skill (1-9) <5>:`,
-`HISCORES TABLE`, `YOUR SCORE IS ONE OF THE BEST 15!`, HUD labels `Score:` / `Xn:` /
-`Full:` / `TIME:`, `PRESS 'Y' TO RESTART, <CR> TO STOP`), MobyGames description
-(reproduced on the archive.org item), tsemachh/xonix README, hindmost/picxonix README,
-Qix references (Wikipedia/wikiwand), javagames.com.ng + playxonix.com clone rules pages.
-js-dos live run: **done** — `https://js-dos.com/xonix/` (DOSBox SVN, `Program: XONIX`)
-was played directly; ~120 frames captured from the emulator canvas and analysed
-pixel-by-pixel (colour counts, sprite clusters, HUD digit template-matching), so every
-"observed" cell below is read off the original's own output, not inferred.
+`Xonix_1984.zip` → `XONIX.EXE`, `BASRUN.EXE`, `XONIX1.BIN`, `HISCORES.XNX`,
+`file_id.diz`; the `.diz` is catalog metadata only — **no readme/manual/FAQ text
+file exists in the item, and none was found on the web**), `strings` on `XONIX.EXE`
+(v2.2: `Enter skill (1-9) <5>:`, `HISCORES TABLE`, `YOUR SCORE IS ONE OF THE BEST
+15!`, HUD labels `Score:` / `Xn:` / `Full:` / `TIME:`, `PRESS 'Y' TO RESTART, <CR>
+TO STOP`), MobyGames description (reproduced on the archive.org item), tsemachh/xonix
+README, hindmost/picxonix README, Unity Discussions "build a xonix game with Unity"
+thread (2019), YouTube "Xonix gameplay (PC Game, 1984)" description, IGDB/GameTrack
+AirXonix blurb, Retronix (jvm-gaming) + r/javahelp PacXon clone notes, Qix
+references (Wikipedia/wikiwand), javagames.com.ng + playxonix.com clone rules pages.
+js-dos live run: **done** — `https://js-dos.com/xonix/` (original DOS v2.2,
+`file_id.diz`: "Xonix v2.2 (1984)(Ilan Rav)"), driven by synthetic bubbling
+`KeyboardEvent`s on `canvas.dosbox-canvas`, frames captured with
+`canvas.toDataURL()` and analysed pixel-by-pixel with PIL (colour counts, sprite
+clusters, HUD digit template-matching) plus HUD crops read by vision. CGA palette
+confirmed exactly — black (0,0,0), cyan (0,170,170), magenta (170,0,170), white
+(170,170,170); no other colours occur in play. Skill 1 was used for this session's
+runs (the original prompts `Enter skill (1-9) <5> :` first); an earlier session ran
+skill 5 (frame sets `run3`/`run5`/`run6`/`run7`).
 
 | Flag | Finding | Evidence | Resolution |
 |---|---|---|---|
-| 1. Enemy in sealed region | **Region stays open water; enemy survives (not eliminated).** The trail cells themselves *do* convert to claimed land even when the enclosed region is not claimed. | Live run: player drew a full-height vertical trail splitting the field in two; on reconnection 2704 px of magenta trail → cyan (land), only 160 px black→cyan (line ends), both halves stayed black, HUD `Full: 0%` unchanged before/after, all 3 ball sprites still present in the sealed halves (frame diff `run3/r02`→`r03`). | Default **kept** — spec §2 ("Enemy inside → region stays open water") matches the original. Trail-becomes-land-when-region-stays-water is new detail, recorded here (spec was silent). |
-| 2. Enemy touches active trail | **Player death** (life lost, active trail discarded, respawn on border) — not a mere trail break. | Live runs: (a) ball sprite came into direct contact with the magenta trail at x320–327 while the trail's head/player was at x360+ (40+ px away); the field then froze ~1.2 s (death pause — balls, warder and trail all static), after which the trail was gone and the player sat back on the border with HUD `Xn` 3→2 (`run5` frames 004→900_after). (b) Same sequence in `run7`: trail up → freeze → respawn, `Xn` 3→2, `Score` 0→10. Ball→player contact also kills (corner contact at a trail head, `run3` d02→d09, `Xn` 3→2). | Default **kept** — spec §2's death list ("an enemy touches the player's active trail") matches the original. |
-| 3. Numeric constants | **Lives: 3** — HUD `Xn: 3` at the start of every fresh game, decrements to 2 on each observed death (3 separate runs). **Fill display:** `Full: N%` = claimed interior ÷ interior area — verified numerically (17456/214016 = 8.16% → displayed `8%`). **Scoring: area-based confirmed** — one run claimed 8.16 % of the interior and `Score` went 0 → 595 (≈ 1 pt per 29.3 canvas px ≈ 7.3 native 320×200 px); no points were awarded for unclaimed seals. Exact points-per-cell not an integer under any obvious grid (272 cells of 8×8 canvas px → 2.19 pts/cell), so the constant is unconfirmed. Two runs also showed `Score` +10 with `Full: 0%` immediately after losing a life (the score field appears to refresh ~2 s late), so a fixed 10-point step tied to life loss may exist — unconfirmed. **Balls:** level 1 runs with exactly **3 balls** plus **1 warder** patrolling the border ring. **Skill:** `Enter skill (1-9) <5>` — difficulty is chosen at game start (default 5), i.e. ball/warder behaviour is skill-scaled. **TIME:** counts down (89 → 84 across a run). **High scores:** top **15** (`YOUR SCORE IS ONE OF THE BEST 15!`). | HUD digit template-matching over captured frames (`run3`, `run5`, `run6`, `run7`); ball/warder sprite census per frame; area/score pair from `run6` (0 → 595 at 8.16 %); `XONIX.EXE` strings for skill/hiscore prompts; MobyGames/Qix/tsemachh/playxonix for the fill threshold. | Defaults **kept**: fill 75 %, 3 lives, area-based scoring × level multiplier. Fill target and the scoring *constant* are not directly observed (75 % corroborated by Qix and by both Xonix clones; no source gives the original's points-per-cell). No amendment to §2/§3 or to the plan's Global Constraints. |
+| 1. Enemy in sealed region | **Region stays open water — not filled; the enemy survives (not eliminated).** The trail cells themselves *do* convert to claimed land even when the enclosed region is not claimed. An enemy-free region *is* filled. | Live control: a 4×44-cell right-hand strip sealed with no enemy inside turned cyan within ~0.35 s (`Full` 0 %→5 %, `Score` 0→109). Live test A: a full top-to-bottom cut at x=312 whose two pockets *both* contained a ball at the seal moment filled neither — both stayed black, `Full` stayed `0 %`, and the new divider line was cyan (frames `h_a0_10`→`h_a0_11`→`h_a0_after`). Live test B (earlier session): player drew a full-height vertical trail splitting the field; on reconnection 2704 px of magenta trail → cyan while both halves stayed black, `Full: 0%` unchanged, all 3 ball sprites still present in the sealed halves (`run3` r02→r03). Corroborating written sources: Unity thread ("do a test floodfill to see which side of the new line the enemies are on … do an actual floodfill on the side they are not on"), tsemachh/xonix README ("Any region you wall off that has no enemy in it gets filled in"), 1984-gameplay YouTube description ("traps the enemies in a small space … finish the level by making a single small cut" — enemies survive in trapped pockets), PacXon clone note ("the area that contains a ghost should not be filled"). **Anomaly:** in live test A one ball sprite vanished from the pocket that stayed water (3→2); not reproduced in run3 or in any other seal, possibly a sprite-detection artifact. | Live js-dos runs (frames `e3_A_*`, `h_a0_*`, `k2_*`, `run3`; HUD crops read by vision); web sources above | **Default kept** — spec §2 unchanged: "Enemy inside → region stays open water (the enemy now roams the smaller pocket)". New detail recorded here (spec was silent): the trail itself becomes land on reconnection even when the region is not claimed. Ball-loss anomaly logged as an open playtest question (below). |
+| 2. Enemy touches active trail | **Player death** (life lost, active trail discarded, respawn on the border) — not a mere trail break. Ball→player contact also kills. | Live: trail drawn down from the top border at x=312; a ball at (320,72) abutted the magenta trail column while the player's head was 88 px away; the whole field froze ~1.2 s (death pause — balls, warder and trail all static), then the trail pixels disappeared, HUD `Xn` went **3 → 2**, and the cursor reappeared at its spawn cell (312,0)–(319,7) with `Score` and `Full` unchanged (frames `g1_04` → `g1_09` → `g1_11`). Earlier session: same sequence twice more (`run5`: ball contact with the magenta trail → freeze → `Xn` 3→2; `run7`: trail up → freeze → respawn, `Xn` 3→2, `Score` 0→10), plus ball→player corner contact at a trail head killing (`run3` d02→d09, `Xn` 3→2). Corroborated by tsemachh/xonix README ("Don't let an enemy touch you or your unfinished trail") and MobyGames description ("enemies … can kill you on contact"). | Live js-dos runs, HUD digit template-matching / vision over frames `g1_*`, `run3`, `run5`, `run7`; web sources above | **Default kept** — spec §2's death list already includes "an enemy touches the player's active trail"; the "trail break" variant is rejected. |
+| 3. Numeric constants | **Lives: confirmed 3** — HUD `Xn: 3` at the start of every fresh game, dropping to 2 (then 1, 0) on each observed death across 5+ runs. **Fill %: `Full: N%` = claimed interior ÷ interior area**, verified numerically (17456/214016 = 8.16 % → displayed `8 %`; a 4×44-cell strip = 5.3 % → displayed `5 %`); best fill ever reached in live play was **8 %**, so the *advance target was never observed* — clone sources disagree (tsemachh 75 %, Retronix 80 %). **Scoring: area-based confirmed, constant not pinned** — two live samples: 5.3 % strip → `Score` 0→109 (skill 1) and 8.16 % claimed → `Score` 0→595 (skill 5, ≈1 pt per 29.3 canvas px); the two are not proportional (1.54× area for 5.46× points), and two runs also showed `Score` +10 with `Full: 0%` right after losing a life, so a level/skill multiplier or bonus step likely exists — unconfirmed. **Extra-life milestones: no evidence found.** **Balls/warders:** level 1 runs had exactly **3 balls** plus **1 warder per patrolled margin**; player speed measured ≈180 screen px/s (90 CGA px/s ≈ 22 cells/s at 4-CGA-px cells), ball speed comparable; per-level ramp never reached — **no evidence**. **Skill:** `Enter skill (1-9) <5>` — difficulty chosen at game start (default 5), i.e. counts/speeds are skill-scaled. **TIME:** counts down from **90** at level start (89 → 84 across a run; one run showed `TIME` back at 90 when `Xn` hit 0). **High scores:** top **15** (`YOUR SCORE IS ONE OF THE BEST 15!`), and game-over with score 0 still prompts `ENTER YOUR NAME:`. | HUD digit template-matching / vision over frames `s_next2`, `e4_afterA` (`Score: 109 Xn: 3 Full: 5% TIME: 89`), `g1_04`, `g1_11`, `k2_00`, `k2_07`, `k3_mon_13`, `run3`/`run5`/`run6`/`run7`; pixel measurements of playfield frames; `XONIX.EXE` strings for skill/hiscore/HUD prompts; MobyGames/Qix/tsemachh/Retronix for the fill threshold. | **Defaults kept**: fill 75 %, 3 lives, area-based scoring × level multiplier. Fill target and the scoring *constant* are not directly observed (75 % rests on Qix + clone corroboration; no source gives the original's points-per-cell). No amendment to §2/§3, so the plan's Global Constraints block needs no change. |
+
+Additional live observations (not §3 flags — recorded so later tasks can match the
+original without re-testing):
+
+- **Boot flow:** title screen (`XONIX` logo, `Ver 2.2`, `Made by Ilan Rav`,
+  `Filling algorithm by Dani Katz` — matches spec §5's credit line) → Enter →
+  `Enter skill (1-9) <5> :` → `HISCORES TABLE` (15 rows) → Enter → gameplay;
+  game-over offers `PRESS 'Y' TO RESTART, <CR> TO STOP`.
+- **HUD:** bottom bar, white text on black: `Score: N   Xn: N   Full: N%   TIME: N`.
+  The original shows **no level number**; spec §5's "score · lives · fill % · level"
+  is therefore a deliberate modern deviation (kept as-is; `TIME` not adopted).
+- **Geometry:** rendered 640×400 (2× CGA 320×200); playfield grid is **80×48 cells
+  of 4 CGA px** (8 screen px per cell), border 2 cells thick, HUD the bottom 2 cell
+  rows, interior 76×44 cells (=214016 canvas px, the denominator verified above).
+  Player, ball and trail are all exactly 1 cell wide.
+- **Sprites:** player = 8×8 ring + 4×4 core whose colours swap with the surface
+  (magenta ring/white core on land, white ring/magenta core in water), spawning at
+  the top-centre of the top border; ball = 8×8 white ring + 4×4 cyan core, bouncing
+  off walls and stopping against active trails (observed); warder = 4×4 cyan square
+  with a black outline patrolling the claimed margins — one killed the player while
+  it sat idle on the top border (`Xn` 3→2), confirming spec §2's "warders kill on
+  contact even on own land".
+- **Death sequence:** ~1.2 s freeze of every sprite (used as the death signal),
+  active trail discarded, respawn at the spawn cell; crossing your own trail was not
+  attempted (movement rules make it impossible — no evidence needed).
+- **Input:** synthetic bubbling `KeyboardEvent`s on `canvas.dosbox-canvas` drive the
+  emulator reliably (Enter/1/arrows). Whether the original *coasts* after a key
+  release could not be settled — two runs disagreed and key-up delivery through the
+  injection path may be lossy — so spec §2's "constant speed, 4-direction" wording
+  stands, with coast-vs-stop deferred to playtest.
 
 Unresolved items (pre-verification defaults stand; playtest calibrates per spec §10):
-- **Fill target %**: never reached in live play (best observed 8 %) — 75 % stands on Qix + clone corroboration only.
-- **Scoring constant / any 10-point per-life step**: formula shape confirmed (area-based), multiplier not pinned.
-- **Extra-life milestones**: no evidence found — default stands (none).
-- **Per-level ball counts/speeds** (and the skill 1–9 → difficulty mapping): only level 1 / skill 5 observed — defaults stand.
-- **TIME reaching 0** and **warder-vs-trail contact**: not observed — no evidence found, defaults stand.
-- Live-run caveats: js-dos freezes the field ~1.2 s on every death (used as the death signal), and the browser tab blanked twice mid-session; screenshots were taken from the emulator canvas itself, so no observation above is fabricated from a frame we did not capture.
+
+- **Fill target %**: never reached in live play (best observed 8 %) — 75 % stands on
+  Qix + clone corroboration only.
+- **Scoring constant / any 10-point per-life step**: shape confirmed (area-based),
+  multiplier not pinned; the two live samples disagree on proportionality.
+- **Extra-life milestones**: no evidence found — default stands (none in spec).
+- **Per-level ball counts/speeds** and the skill 1–9 → difficulty mapping: only
+  level 1 (skills 1 and 5) observed — defaults stand.
+- **`TIME` reaching 0**, **warder-vs-trail contact**, and the single ball-loss-at-seal
+  anomaly: not observed / not reproduced — no evidence found, defaults stand.
+- **Live-run caveats:** js-dos freezes the field ~1.2 s on every death (used as the
+  death signal), and the browser tab blanked twice mid-session; every screenshot was
+  taken from the emulator canvas itself, so no observation above is fabricated from a
+  frame we did not capture.
+
+No §2/§3 default was contradicted, so no rule text above was amended.

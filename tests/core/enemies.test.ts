@@ -37,8 +37,14 @@ describe('enemies', () => {
 
   test('createBalls only spawns on water', () => {
     const g = createGrid(10, 8, 2);
+    const values = [
+      0.05, 0.5,               // candidate 1: cell (0,4) = LAND → must be rejected (only 2 calls consumed)
+      0.35, 0.45, 0.6, 0.7,    // candidate 2: (3,3) water, dx=1, dy=1
+      0.55, 0.65, 0.2, 0.9,    // candidate 3: (5,5) water, dx=-1, dy=1
+      0.45, 0.35, 0.8, 0.1,    // candidate 4: (4,2) water, dx=1, dy=-1
+    ];
     let i = 0;
-    const rng = () => [0.5, 0.5, 0.35, 0.45][i++ % 4]; // deterministic-ish
+    const rng = () => values[i++ % values.length];
     const balls = createBalls(g, 3, rng);
     expect(balls.length).toBe(3);
     for (const b of balls) expect(getCell(g, Math.floor(b.x), Math.floor(b.y))).toBe(0);

@@ -1,12 +1,31 @@
 import './styles.css';
 import { PRESETS } from './core/levels';
-import { createGame, tick, drainEvents } from './core/game';
+import {
+  createGame, startGame, tick, togglePause, setDirection, drainEvents, returnToTitle,
+} from './core/game';
 import { Renderer } from './render/renderer';
+import { attachInput } from './input/input';
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const preset = PRESETS.classic;
 const game = createGame(preset);
 const renderer = new Renderer(canvas, preset);
+
+attachInput({
+  onDir: (d) => setDirection(game, d),
+  onStart: () => {
+    if (game.state === 'title' || game.state === 'gameover') startGame(game);
+    else if (game.state === 'paused') togglePause(game);
+  },
+  onPause: () => {
+    if (game.state === 'playing' || game.state === 'paused') togglePause(game);
+    else if (game.state === 'gameover') returnToTitle(game);
+  },
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && game.state === 'playing') togglePause(game);
+});
 
 let last = performance.now();
 let acc = 0;

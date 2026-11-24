@@ -21,3 +21,44 @@ html, body {
   image-rendering: crisp-edges;
   background: #000;
 }
+#dpad {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(2, 56px);
+  gap: 4px;
+  opacity: 0.55;
+  z-index: 5;
+}
+#dpad button {
+  font-size: 22px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 8px;
+  min-width: 56px;
+  min-height: 56px;
+  touch-action: manipulation;
+}
+#dpad [data-dir="up"]    { grid-column: 2; grid-row: 1; }
+#dpad [data-dir="left"]  { grid-column: 1; grid-row: 2; }
+#dpad [data-dir="down"]  { grid-column: 2; grid-row: 2; }
+#dpad [data-dir="right"] { grid-column: 3; grid-row: 2; }
+#btn-pause {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: 1px solid #00FFFF;
+  border-radius: 6px;
+}
+@media (hover: hover) and (pointer: fine) {
+  #dpad { display: none; } /* D-pad is for touch devices */
+}

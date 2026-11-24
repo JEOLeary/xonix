@@ -14,6 +14,8 @@ const KEY_DIRS: Record<string, Dir> = {
 
 export function attachInput(h: InputHandlers): () => void {
   const onKeyDown = (ev: KeyboardEvent): void => {
+    const ae = document.activeElement;
+    if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || (ae as HTMLElement).isContentEditable)) return;
     if (ev.key in KEY_DIRS) {
       h.onDir(KEY_DIRS[ev.key]);
       ev.preventDefault();

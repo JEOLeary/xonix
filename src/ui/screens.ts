@@ -113,6 +113,7 @@ export function initScreens(cb: ScreensCallbacks): Screens {
   });
 
   function sync(g: Game): void {
+    if (g.state !== 'gameover') pendingEntry = null;
     switch (g.state) {
       case 'title':
         renderScores();

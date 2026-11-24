@@ -14,6 +14,66 @@
     <button data-dir="down" type="button">▼</button>
     <button data-dir="right" type="button">▶</button>
   </div>
+
+  <div id="overlays">
+    <div id="screen-title" class="screen">
+      <h1 class="logo">XONIX</h1>
+      <p class="credit">Original by Ilan Rav &amp; Dani Katz, 1984 — web reproduction</p>
+      <h2>HIGH SCORES</h2>
+      <ol id="score-list" class="scores"></ol>
+      <p class="legend">Steer into the black, draw a line back to cyan to claim it.
+        Fill 75% to advance. Don't touch the balls — or your own live line!</p>
+      <div class="buttons">
+        <button id="btn-start" type="button">START</button>
+        <button id="btn-settings" type="button">SETTINGS</button>
+      </div>
+    </div>
+
+    <div id="screen-settings" class="screen hidden">
+      <h2>SETTINGS</h2>
+      <div class="setting-row" data-setting="displaySize">
+        <span class="label">Display</span>
+        <button data-value="fit" type="button">Fit</button>
+        <button data-value="1x" type="button">1×</button>
+        <button data-value="2x" type="button">2×</button>
+        <button data-value="3x" type="button">3×</button>
+        <button data-value="fullscreen" type="button">Fullscreen</button>
+      </div>
+      <div class="setting-row" data-setting="playfield">
+        <span class="label">Playfield</span>
+        <button data-value="classic" type="button">Classic 320×200</button>
+        <button data-value="roomy" type="button">Roomy 640×400</button>
+      </div>
+      <div class="setting-row" data-setting="sound">
+        <span class="label">Sound</span>
+        <button data-value="on" type="button">On</button>
+        <button data-value="off" type="button">Off</button>
+      </div>
+      <button id="btn-settings-back" type="button">BACK</button>
+    </div>
+
+    <div id="screen-pause" class="screen hidden">
+      <h2>PAUSED</h2>
+      <p>Tap here or press P to resume</p>
+    </div>
+
+    <div id="screen-levelclear" class="screen hidden">
+      <h2>LEVEL CLEAR</h2>
+      <p id="clear-summary"></p>
+    </div>
+
+    <div id="screen-gameover" class="screen hidden">
+      <h2>GAME OVER</h2>
+      <p id="final-score"></p>
+      <form id="initials-form" class="hidden">
+        <label for="initials-input">NEW HIGH SCORE — initials:</label>
+        <input id="initials-input" maxlength="3" autocomplete="off" spellcheck="false" />
+        <button type="submit">SAVE</button>
+      </form>
+      <button id="btn-gameover-ok" type="button">OK</button>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

@@ -1,0 +1,23 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #fff;
+  font-family: monospace;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+#stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+#game {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #000;
+}

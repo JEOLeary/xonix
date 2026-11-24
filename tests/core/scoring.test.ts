@@ -45,4 +45,11 @@ describe('scoring', () => {
     expect(next).toHaveLength(2);
     expect(next[0].initials).toBe('NEW');
   });
+
+  test('insertScore: equal scores rank the earlier date first', () => {
+    const newer: ScoreEntry = { initials: 'AAA', score: 100, level: 1, date: '2026-11-23T10:00:00.000Z' };
+    const older: ScoreEntry = { initials: 'BBB', score: 100, level: 1, date: '2026-11-22T10:00:00.000Z' };
+    const list = insertScore([newer], older);
+    expect(list.map((e) => e.initials)).toEqual(['BBB', 'AAA']);
+  });
 });

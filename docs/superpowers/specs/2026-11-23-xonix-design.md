@@ -302,3 +302,5 @@ Unresolved items (pre-verification defaults stand; playtest calibrates per spec 
   frame we did not capture.
 
 No §2/§3 default was contradicted, so no rule text above was amended.
+
+**T16 acceptance note (2026-11-25):** the web build's `Full:` percentage counts the 2-cell border in numerator *and* denominator (`landFraction` = land ÷ all cells), so it reads **13 %** Classic / **6.7 %** Roomy at start instead of flag 3's verified interior-only `0 %`, and the level-1 75 % target equals ≈71 % of the interior on Classic (≈73 % Roomy) — a known divergence carried in the plan since Task 10; §2 rule text stands.

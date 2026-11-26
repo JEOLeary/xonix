@@ -21,20 +21,16 @@ html, body {
   image-rendering: crisp-edges;
   background: #000;
 }
-#canvas-wrap { position: relative; }
+#canvas-wrap { position: relative; display: flex; flex-direction: column; }
 #hud {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  container-type: inline-size;
+  height: var(--hud-h-px);
+  flex: none;
   background: #000;
   pointer-events: none;
 }
 #hud-text {
-  font-size: 16px;
-  font-size: calc(var(--hud-font) * 1cqw);
-  line-height: calc(var(--hud-strip) * 1cqw);
+  font-size: var(--hud-font-px);
+  line-height: var(--hud-h-px);
   font-weight: bold;
   font-family: monospace;
   color: #fff;
@@ -164,11 +160,13 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   background: #000;
 }
-#canvas-wrap:fullscreen #game { width: min(100vw, 160vh); height: auto; }
+#canvas-wrap:fullscreen #game {
+  width: min(100vw, calc((100vh - var(--hud-h-px)) * 1.7391));
+  height: auto;
+}
 #canvas-wrap:fullscreen #hud {
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(100vw, 160vh);
+  width: min(100vw, calc((100vh - var(--hud-h-px)) * 1.7391));
 }

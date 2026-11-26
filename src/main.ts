@@ -1,5 +1,5 @@
 import './styles.css';
-import { PRESETS } from './core/levels';
+import { PRESETS, type Preset } from './core/levels';
 import {
   createGame, startGame, tick, togglePause, setDirection, drainEvents, returnToTitle,
   type Game,
@@ -16,6 +16,14 @@ const hud = document.getElementById('hud-text') as HTMLElement;
 let settings = loadSettings();
 let game: Game = createGame(PRESETS[settings.playfield]);
 let renderer = new Renderer(canvas, hud, game.preset);
+
+// HUD sizing vars live on the wrap so #hud and the canvas both inherit them;
+// the HUD is fixed at the preset's native pixel height (R20) and never scales.
+function applyHudVars(p: Preset): void {
+  wrap.style.setProperty('--hud-h-px', `${p.hudH}px`);
+  wrap.style.setProperty('--hud-font-px', `${p.hudH - 8}px`);
+}
+applyHudVars(game.preset);
 const audio = new GameAudio();
 audio.setEnabled(settings.sound);
 
@@ -29,7 +37,7 @@ function applyDisplaySize(size: Settings['displaySize']): void {
   if (document.fullscreenElement) void document.exitFullscreen();
   const p = game.preset;
   const scale = size === 'fit'
-    ? Math.min(window.innerWidth / p.canvasW, window.innerHeight / p.canvasH)
+    ? Math.min(window.innerWidth / p.canvasW, (window.innerHeight - p.hudH) / (p.canvasH - p.hudH))
     : Number(size.charAt(0)); // '1x' → 1, '2x' → 2, '3x' → 3
   canvas.style.width = `${Math.floor(scale * p.canvasW)}px`;
   canvas.style.height = 'auto';
@@ -53,6 +61,7 @@ function applySettings(s: Settings): void {
   if (wanted.name !== game.preset.name) {
     game = createGame(wanted);          // settings are only reachable from the title,
     renderer = new Renderer(canvas, hud, wanted); // so a preset switch restarts cleanly
+    applyHudVars(wanted);               // HUD height/font follow the preset
   }
   applyDisplaySize(s.displaySize);
 }

@@ -10,7 +10,6 @@ const COLORS = {
   player: '#FFFFFF',
   ball: '#FFFFFF',
   warder: '#FF00FF',
-  hud: '#FFFFFF',
   flash: '#FFFFFF',
 };
 
@@ -27,10 +26,8 @@ export class Renderer {
     this.hud = hud;
     this.preset = preset;
     canvas.width = preset.canvasW;
-    canvas.height = preset.canvasH;
+    canvas.height = preset.canvasH - preset.hudH; // field-only: the HUD lives in the DOM
     ctx.imageSmoothingEnabled = false;
-    hud.style.setProperty('--hud-font', String((preset.hudH - 8) / preset.canvasW * 100));
-    hud.style.setProperty('--hud-strip', String(preset.hudH / preset.canvasW * 100));
   }
 
   onEvent(e: GameEvent): void {
@@ -42,7 +39,7 @@ export class Renderer {
   draw(g: Game): void {
     const { ctx, preset } = this;
     const { cellPx, hudH, cols, rows, canvasW, canvasH } = preset;
-    const oy = hudH; // playfield origin (below HUD strip)
+    const oy = 0; // field-only canvas: playfield starts at the top edge
 
     // 1. water background
     ctx.fillStyle = COLORS.water;
@@ -104,12 +101,6 @@ export class Renderer {
       ctx.fillRect(c.x * cellPx, oy + c.y * cellPx, cellPx, cellPx);
     }
 
-    // 7. HUD strip
-    ctx.fillStyle = COLORS.water;
-    ctx.fillRect(0, 0, canvasW, hudH);
-    ctx.fillStyle = COLORS.hud;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
     const pct = Math.floor(g.pct * 100);
     const hud = `SCORE ${String(g.score).padStart(6, '0')}  LIVES ${g.lives}  FILL ${pct}%  LV ${g.level}`;
     this.hud.textContent = hud;

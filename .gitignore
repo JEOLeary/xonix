@@ -3,3 +3,4 @@ dist/
 .hermes/
 *.local
 .NeuroStrata/plugins/github-cli/copilot-extension.json
+.NeuroStrata/session_queries.json

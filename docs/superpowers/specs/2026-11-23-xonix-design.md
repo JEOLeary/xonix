@@ -126,7 +126,10 @@ tests call `tick()` directly with no rendering involved.
 - Original palette: black field, **cyan** land/border, **magenta** trail, white player;
   blocky pixel sprites drawn programmatically (no image assets)
 - Modern touches: capture flash + brief fill animation, death explosion, smooth 60 fps,
-  HUD bar (score · lives · fill % · level) in a CGA-style text font
+  HUD bar (score · lives · fill % · level) in a CGA-style text font — **HUD text renders
+  as a DOM overlay (`#hud`) sized against the canvas width, crisp at every display size
+  and after any resize (user directive 2026-11-24, R17); the playfield stays
+  nearest-neighbor pixel-scaled and the canvas keeps only the black strip fill**
 - Title screen echoes the original: stacked magenta **XONIX** logo, Ilan Rav / Dani
   Katz credit
 

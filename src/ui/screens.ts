@@ -1,5 +1,5 @@
 import type { Game } from '../core/game';
-import { qualifiesForTopTen, insertScore, type ScoreEntry } from '../core/scoring';
+import { qualifiesForTopTen, insertScore, levelClearBonus, type ScoreEntry } from '../core/scoring';
 import {
   loadScores, saveScores, loadSettings, saveSettings, type Settings,
 } from '../persist/storage';
@@ -126,14 +126,17 @@ export function initScreens(cb: ScreensCallbacks): Screens {
       case 'dying':
         showOnly(null);
         break;
-      case 'levelclear':
+      case 'levelclear': {
+        const bonus = levelClearBonus(g.lives, g.level); // same call the emitter made this tick
         el('clear-summary').textContent =
-          `Level ${g.level} cleared — ${Math.floor(g.pct * 100)}% filled!`;
+          `Level ${g.level} cleared — ${Math.floor(g.pct * 100)}% filled! — bonus ${bonus}`;
         showOnly('levelclear');
         break;
+      }
       case 'gameover': {
         el('final-score').textContent =
           `SCORE ${String(g.score).padStart(6, '0')} — reached level ${g.level}`;
+        showOnly('gameover'); // un-hide first so the field below can take focus
         const form = el<HTMLFormElement>('initials-form');
         if (pendingEntry === null && g.score > 0 && qualifiesForTopTen(scores, g.score)) {
           pendingEntry = {
@@ -146,7 +149,6 @@ export function initScreens(cb: ScreensCallbacks): Screens {
         } else if (pendingEntry === null) {
           form.classList.add('hidden');
         }
-        showOnly('gameover');
         break;
       }
     }

@@ -22,7 +22,7 @@ audio.setEnabled(settings.sound);
 function applyDisplaySize(size: Settings['displaySize']): void {
   if (size === 'fullscreen') {
     if (!document.fullscreenElement && wrap.requestFullscreen) {
-      wrap.requestFullscreen().catch(() => {});
+      wrap.requestFullscreen().catch(() => applyDisplaySize('fit')); // no gesture at boot → size the canvas instead
     }
     return;
   }
@@ -53,7 +53,6 @@ function applySettings(s: Settings): void {
   if (wanted.name !== game.preset.name) {
     game = createGame(wanted);          // settings are only reachable from the title,
     renderer = new Renderer(canvas, hud, wanted); // so a preset switch restarts cleanly
-    lastState = '';
   }
   applyDisplaySize(s.displaySize);
 }
@@ -87,7 +86,7 @@ const screens = initScreens({
     if (game.state === 'paused') togglePause(game);
   },
   onQuitToTitle: () => returnToTitle(game),
-  onSettingsApplied: (s) => applySettings(s),
+  onSettingsApplied: (s) => { audio.handle({ type: 'start' }); applySettings(s); },
 });
 
 applyDisplaySize(settings.displaySize);

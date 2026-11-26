@@ -20,6 +20,7 @@ export function attachInput(h: InputHandlers): () => void {
       h.onDir(KEY_DIRS[ev.key]);
       ev.preventDefault();
     } else if (ev.key === 'Enter' || ev.key === ' ') {
+      if ((document.activeElement as HTMLElement | null)?.tagName === 'BUTTON') return;
       h.onStart();
       ev.preventDefault();
     } else if (ev.key === 'p' || ev.key === 'P' || ev.key === 'Escape') {

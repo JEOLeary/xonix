@@ -90,6 +90,15 @@ export function startGame(g: Game): void {
 
 export function returnToTitle(g: Game): void {
   g.state = 'title';
+  g.level = 1;
+  g.lives = 3;
+  g.score = 0;
+  g.grid = createGrid(g.preset.cols, g.preset.rows, g.preset.border);
+  g.ring = buildRing(g.grid, g.preset.border);
+  g.player = createPlayer(g.grid, g.preset.border);
+  g.balls = [];
+  g.warders = [];
+  g.pct = landFraction(g.grid);
 }
 
 export function setDirection(g: Game, d: Dir): void {

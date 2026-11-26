@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { PRESETS } from '../../src/core/levels';
-import { setCell, LAND, WATER, TRAIL, countCells } from '../../src/core/grid';
+import { setCell, LAND, WATER, TRAIL, countCells, landFraction } from '../../src/core/grid';
 import {
   createGame, startGame, tick, togglePause, setDirection,
   drainEvents, returnToTitle, type Game,
@@ -124,5 +124,50 @@ describe('game', () => {
     const g = startedGame();
     returnToTitle(g);
     expect(g.state).toBe('title');
+  });
+
+  test('returnToTitle resets the whole run so the title HUD starts fresh', () => {
+    const g = startedGame();
+    g.balls = [];
+    g.warders = [];
+    for (let i = 0; i < 5; i++) tick(g); // run a little, then dirty the run state
+    g.score = 1234;
+    g.lives = 2;
+    g.level = 3;
+    setCell(g.grid, 5, 5, TRAIL);
+    g.pct = 0.99;
+
+    returnToTitle(g);
+
+    const fresh = createGame(PRESETS.classic);
+    expect(g.state).toBe('title');
+    expect(g.score).toBe(0);
+    expect(g.lives).toBe(3);
+    expect(g.level).toBe(1);
+    expect(g.pct).toBe(landFraction(fresh.grid));
+    expect(g.grid.w).toBe(fresh.grid.w);
+    expect(g.grid.h).toBe(fresh.grid.h);
+    expect(Array.from(g.grid.cells)).toEqual(Array.from(fresh.grid.cells));
+    expect(g.ring).toEqual(fresh.ring);
+    expect(g.balls).toHaveLength(0);
+    expect(g.warders).toHaveLength(0);
+    expect(g.events).toHaveLength(0); // returnToTitle emits nothing
+  });
+
+  test('roomy smoke: 160×92 grid, 8 balls at L1, ten ticks without crashing', () => {
+    // tuningFor(1, roomy): baseBalls = min(1+1,10) = 2, areaRatio = (160*92)/(80*46) = 4 → 8
+    const g = createGame(PRESETS.roomy);
+    expect(g.grid.w).toBe(160);
+    expect(g.grid.h).toBe(92);
+
+    startGame(g);
+    expect(g.state).toBe('playing');
+    expect(g.balls).toHaveLength(8);
+    expect(g.warders).toHaveLength(4);
+
+    for (let i = 0; i < 10; i++) tick(g); // no throw; a stationary player may be hit
+    expect(['playing', 'dying']).toContain(g.state);
+    expect(g.grid.w).toBe(160);
+    expect(g.grid.h).toBe(92);
   });
 });

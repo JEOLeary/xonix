@@ -2,3 +2,4 @@ node_modules/
 dist/
 .hermes/
 *.local
+.NeuroStrata/plugins/github-cli/copilot-extension.json

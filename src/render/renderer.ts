@@ -16,15 +16,21 @@ const COLORS = {
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D;
+  private hud: HTMLElement;
+  private preset: Preset;
   private flash = new Map<number, number>(); // flat cell index → frames remaining
 
-  constructor(canvas: HTMLCanvasElement, private preset: Preset) {
+  constructor(canvas: HTMLCanvasElement, hud: HTMLElement, preset: Preset) {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('2d canvas context unavailable');
     this.ctx = ctx;
+    this.hud = hud;
+    this.preset = preset;
     canvas.width = preset.canvasW;
     canvas.height = preset.canvasH;
     ctx.imageSmoothingEnabled = false;
+    hud.style.setProperty('--hud-font', String((preset.hudH - 8) / preset.canvasW * 100));
+    hud.style.setProperty('--hud-strip', String(preset.hudH / preset.canvasW * 100));
   }
 
   onEvent(e: GameEvent): void {
@@ -102,11 +108,10 @@ export class Renderer {
     ctx.fillStyle = COLORS.water;
     ctx.fillRect(0, 0, canvasW, hudH);
     ctx.fillStyle = COLORS.hud;
-    ctx.font = `bold ${hudH - 8}px monospace`;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     const pct = Math.floor(g.pct * 100);
     const hud = `SCORE ${String(g.score).padStart(6, '0')}  LIVES ${g.lives}  FILL ${pct}%  LV ${g.level}`;
-    ctx.fillText(hud, 4, hudH / 2);
+    this.hud.textContent = hud;
   }
 }

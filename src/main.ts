@@ -11,16 +11,18 @@ import { initScreens } from './ui/screens';
 import { loadSettings, type Settings } from './persist/storage';
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
+const wrap = document.getElementById('canvas-wrap') as HTMLDivElement;
+const hud = document.getElementById('hud-text') as HTMLElement;
 let settings = loadSettings();
 let game: Game = createGame(PRESETS[settings.playfield]);
-let renderer = new Renderer(canvas, game.preset);
+let renderer = new Renderer(canvas, hud, game.preset);
 const audio = new GameAudio();
 audio.setEnabled(settings.sound);
 
 function applyDisplaySize(size: Settings['displaySize']): void {
   if (size === 'fullscreen') {
-    if (!document.fullscreenElement && canvas.requestFullscreen) {
-      canvas.requestFullscreen().catch(() => {});
+    if (!document.fullscreenElement && wrap.requestFullscreen) {
+      wrap.requestFullscreen().catch(() => {});
     }
     return;
   }
@@ -33,13 +35,24 @@ function applyDisplaySize(size: Settings['displaySize']): void {
   canvas.style.height = 'auto';
 }
 
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) {
+    // entering: drop inline sizes so the :fullscreen CSS sizes canvas + HUD
+    canvas.style.width = '';
+    canvas.style.height = '';
+  } else {
+    // exiting: restore the windowed size; never re-request fullscreen here (loop guard)
+    applyDisplaySize(settings.displaySize === 'fullscreen' ? 'fit' : settings.displaySize);
+  }
+});
+
 function applySettings(s: Settings): void {
   settings = s;
   audio.setEnabled(s.sound);
   const wanted = PRESETS[s.playfield];
   if (wanted.name !== game.preset.name) {
     game = createGame(wanted);          // settings are only reachable from the title,
-    renderer = new Renderer(canvas, wanted); // so a preset switch restarts cleanly
+    renderer = new Renderer(canvas, hud, wanted); // so a preset switch restarts cleanly
     lastState = '';
   }
   applyDisplaySize(s.displaySize);

@@ -21,6 +21,27 @@ html, body {
   image-rendering: crisp-edges;
   background: #000;
 }
+#canvas-wrap { position: relative; }
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  container-type: inline-size;
+  background: #000;
+  pointer-events: none;
+}
+#hud-text {
+  font-size: 16px;
+  font-size: calc(var(--hud-font) * 1cqw);
+  line-height: calc(var(--hud-strip) * 1cqw);
+  font-weight: bold;
+  font-family: monospace;
+  color: #fff;
+  white-space: pre;
+  padding-left: 1.25%;
+  display: block;
+}
 #dpad {
   position: fixed;
   left: 12px;
@@ -139,4 +160,15 @@ html, body {
   font-family: monospace;
   letter-spacing: 6px;
 }
-#game:fullscreen { width: 100vw; height: 100vh; object-fit: contain; background: #000; }
+#canvas-wrap:fullscreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #000;
+}
+#canvas-wrap:fullscreen #game { width: min(100vw, 160vh); height: auto; }
+#canvas-wrap:fullscreen #hud {
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100vw, 160vh);
+}

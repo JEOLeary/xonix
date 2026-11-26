@@ -8,7 +8,12 @@
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
 </head>
 <body>
-  <div id="stage"><canvas id="game" width="320" height="200"></canvas></div>
+  <div id="stage">
+    <div id="canvas-wrap">
+      <canvas id="game" width="320" height="200"></canvas>
+      <div id="hud"><span id="hud-text"></span></div>
+    </div>
+  </div>
   <button id="btn-pause" type="button" aria-label="Pause">II</button>
   <div id="dpad" aria-label="Direction pad">
     <button data-dir="up" type="button">▲</button>
